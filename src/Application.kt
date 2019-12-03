@@ -52,7 +52,9 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
-    val db = InMemoryRepository()
+    DatabaseFactory.init()
+
+    val db = EmojiPhrasesRepository()
 
     routing {
         static("/static") {
@@ -65,8 +67,6 @@ fun Application.module(testing: Boolean = false) {
         phrases(db)
     }
 }
-
-const val API_VERSION = "api/v1"
 
 suspend fun ApplicationCall.redirect(location: Any) {
     respondRedirect(application.locations.href(location))

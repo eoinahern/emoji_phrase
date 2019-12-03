@@ -14,7 +14,7 @@ import io.ktor.routing.*
 import java.lang.IllegalArgumentException
 
 
-const val PHRASES_URL = "$API_VERSION/phrases"
+const val PHRASES_URL = "/phrases"
 
 @Location(PHRASES_URL)
 class Phrases
@@ -48,7 +48,7 @@ fun Route.phrases(db: Repository) {
                 "add" -> {
                     val emoji = params["emoji"] ?: throw IllegalArgumentException("emoji not found in params")
                     val phrase = params["phrase"] ?: throw IllegalArgumentException("phrase not found in params")
-                    db.add(EmojiPhrase(emoji, phrase))
+                    db.add(emoji, phrase)
                 }
             }
 

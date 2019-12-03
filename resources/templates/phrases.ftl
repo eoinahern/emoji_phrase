@@ -17,7 +17,7 @@
         </table
     </#if>
     <div class="panel-body">
-    <form method="post" method="api/v1/phrases">
+    <form method="post" method="/phrases">
     <input type="hidden" name="action" value="add"/>
     Emoji<br>
      <input type="text" name="emoji"/><br>
