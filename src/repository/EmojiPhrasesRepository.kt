@@ -29,7 +29,6 @@ class EmojiPhrasesRepository : Repository {
         }
     }
 
-
     override suspend fun phrase(id: String): EmojiPhrase? {
         return phrase(id.toInt())
     }
