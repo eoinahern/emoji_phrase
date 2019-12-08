@@ -9,10 +9,13 @@ import java.lang.IllegalArgumentException
 
 
 class EmojiPhrasesRepository : Repository {
-    override suspend fun add(emojiValue: String, phraseValue: String) {
+
+
+    override suspend fun add(userid: String, emojiValue: String, phraseValue: String) {
 
         transaction {
             EmojiPhrases.insert {
+                it[user] = userid
                 it[emoji] = emojiValue
                 it[phrase] = phraseValue
             }
@@ -48,6 +51,44 @@ class EmojiPhrasesRepository : Repository {
         }
     }
 
+    override suspend fun user(id: String, hash: String?): User? {
+        val user = query {
+            Users.select {
+                (Users.id eq id)
+            }.mapNotNull {
+                toUser(it)
+            }.singleOrNull()
+        }
+
+
+        return when {
+            user == null -> null
+            hash == null -> user
+            user.passwordHash == null -> user
+            else -> null
+        }
+    }
+
+    override suspend fun userByEmail(email: String): User? = query {
+        Users.select {
+            Users.email.eq(email)
+        }.mapNotNull {
+            toUser(it)
+        }.singleOrNull()
+    }
+
+    override suspend fun createUser(user: User) = query {
+
+        Users.insert { row ->
+            row[id] = user.userId
+            row[email] = user.email
+            row[displayName] = user.displayName
+            row[passwordHash] = user.passwordHash
+        }
+
+        Unit
+    }
+
     override suspend fun remove(id: String): Boolean {
         return remove(id.toInt())
     }
@@ -59,10 +100,18 @@ class EmojiPhrasesRepository : Repository {
     private fun toEmojiPhrase(row: ResultRow): EmojiPhrase {
         return EmojiPhrase(
             id = row[EmojiPhrases.id].value,
+            userId = row[EmojiPhrases.user],
             emoji = row[EmojiPhrases.emoji],
             phrase = row[EmojiPhrases.phrase]
         )
     }
+
+    fun toUser(res: ResultRow): User = User(
+        userId = res[Users.id],
+        email = res[Users.email],
+        displayName = res[Users.displayName],
+        passwordHash = res[Users.passwordHash]
+    )
 
 
 }

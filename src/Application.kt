@@ -40,7 +40,7 @@ fun Application.module(testing: Boolean = false) {
         templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates") as TemplateLoader?
     }
 
-    install(Authentication) {
+    /*install(Authentication) {
         basic(name = "auth") {
             realm = "ktor server"
             validate { credentials ->
@@ -50,11 +50,13 @@ fun Application.module(testing: Boolean = false) {
                     null
             }
         }
-    }
+    }*/
 
     DatabaseFactory.init()
 
     val db = EmojiPhrasesRepository()
+
+    val hashFunction: (String) -> String = { s -> hash(s) }
 
     routing {
         static("/static") {
@@ -65,6 +67,10 @@ fun Application.module(testing: Boolean = false) {
         about()
         phrase(db)
         phrases(db)
+        signin(db, hashFunction)
+        signup(db, hashFunction)
+        signout()
+
     }
 }
 

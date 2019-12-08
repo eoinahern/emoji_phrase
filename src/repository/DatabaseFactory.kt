@@ -13,6 +13,7 @@ object DatabaseFactory {
 
         transaction {
             SchemaUtils.create(EmojiPhrases)
+            SchemaUtils.create(Users)
         }
     }
 

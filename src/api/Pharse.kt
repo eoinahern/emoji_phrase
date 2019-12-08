@@ -14,12 +14,10 @@ const val PHRASE_ENDPOINT = "/phrase"
 
 fun Route.phrase(db: Repository) {
 
-
-    authenticate("auth") {
-        post(PHRASE_ENDPOINT) {
-            val req = call.receive<Request>()
-            val phrase = db.add(req.emoji, req.phrase)
-            call.respond(phrase)
-        }
+    post(PHRASE_ENDPOINT) {
+        val req = call.receive<Request>()
+        val phrase = db.add("", req.emoji, req.phrase)
+        call.respond(phrase)
     }
+
 }
