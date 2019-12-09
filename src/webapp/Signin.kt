@@ -25,7 +25,6 @@ fun Route.signin(db: Repository, hashfunction: (String) -> String) {
     post<Signin> {
         val params = call.receive<Parameters>()
 
-
         val userId = params["userId"] ?: return@post call.redirect(it)
         val password = params["password"] ?: return@post call.redirect(it)
 
@@ -35,9 +34,7 @@ fun Route.signin(db: Repository, hashfunction: (String) -> String) {
             userId.length < MIN_USER_ID_LENGTH -> null
             password.length < MIN_USER_PASS_LENGTH -> null
             !userNameValid(userId) -> null
-            else -> {
-                db.user(userId, hashfunction(password))
-            }
+            else -> db.user(userId, hashfunction(password))
         }
 
         if (signin == null) {

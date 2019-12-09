@@ -21,12 +21,8 @@ fun Route.home(repo: Repository) = get<Home> {
     call.respond(FreeMarkerContent("/common/home.ftl", mapOf("user" to user)))
 }
 
-
-fun Route.hello() = get("/hello") { call.respondText("i say hello") }
-
 @Location(ABOUT)
 class About
-
 
 fun Route.about(repo: Repository) = get<About> {
     val user = call.sessions.get<EPSession>()?.let { repo.user(it.userId) }

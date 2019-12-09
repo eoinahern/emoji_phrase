@@ -1,8 +1,8 @@
 package com.example
 
-import io.ktor.util.*
-import javax.crypto.*
-import javax.crypto.spec.*
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
+import io.ktor.util.hex
 
 
 const val MIN_USER_ID_LENGTH: Int = 4

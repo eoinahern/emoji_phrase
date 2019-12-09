@@ -51,20 +51,18 @@ class EmojiPhrasesRepository : Repository {
         }
     }
 
-    override suspend fun user(id: String, hash: String?): User? {
+    override suspend fun user(userId: String, hash: String?): User? {
         val user = query {
             Users.select {
-                (Users.id eq id)
-            }.mapNotNull {
-                toUser(it)
-            }.singleOrNull()
+                (Users.id eq userId)
+            }.mapNotNull { toUser(it) }
+                .singleOrNull()
         }
-
 
         return when {
             user == null -> null
             hash == null -> user
-            user.passwordHash == null -> user
+            user.passwordHash == hash -> user
             else -> null
         }
     }
@@ -106,7 +104,7 @@ class EmojiPhrasesRepository : Repository {
         )
     }
 
-    fun toUser(res: ResultRow): User = User(
+    private fun toUser(res: ResultRow): User = User(
         userId = res[Users.id],
         email = res[Users.email],
         displayName = res[Users.displayName],

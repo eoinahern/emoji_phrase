@@ -16,6 +16,7 @@ import io.ktor.locations.*
 import io.ktor.response.*
 import io.ktor.request.*
 import io.ktor.routing.*
+import io.ktor.sessions.*
 import java.net.*
 import java.util.concurrent.*
 
@@ -39,21 +40,15 @@ fun Application.module(testing: Boolean = false) {
 
     this.install(Locations)
 
+    install(Sessions) {
+        cookie<EPSession>("SESSION") {
+            transform(SessionTransportTransformerMessageAuthentication(hashKey))
+        }
+    }
+
     install(FreeMarker) {
         templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates") as TemplateLoader?
     }
-
-    /*install(Authentication) {
-        basic(name = "auth") {
-            realm = "ktor server"
-            validate { credentials ->
-                if (credentials.password == credentials.name.plus("123"))
-                    User(credentials.name)
-                else
-                    null
-            }
-        }
-    }*/
 
     DatabaseFactory.init()
 
@@ -66,7 +61,6 @@ fun Application.module(testing: Boolean = false) {
             resources("images")
         }
         home(db)
-        hello()
         about(db)
         phrase(db)
         phrases(db, hashFunction)
