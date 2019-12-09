@@ -10,11 +10,14 @@ import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.features.*
 import io.ktor.freemarker.*
+import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.locations.*
 import io.ktor.response.*
 import io.ktor.request.*
 import io.ktor.routing.*
+import java.net.*
+import java.util.concurrent.*
 
 fun main(args: Array<String>) = io.ktor.server.netty.EngineMain.main(args)
 
@@ -62,11 +65,11 @@ fun Application.module(testing: Boolean = false) {
         static("/static") {
             resources("images")
         }
-        home()
+        home(db)
         hello()
-        about()
+        about(db)
         phrase(db)
-        phrases(db)
+        phrases(db, hashFunction)
         signin(db, hashFunction)
         signup(db, hashFunction)
         signout()
@@ -77,4 +80,16 @@ fun Application.module(testing: Boolean = false) {
 suspend fun ApplicationCall.redirect(location: Any) {
     respondRedirect(application.locations.href(location))
 }
+
+
+fun ApplicationCall.referrerHost() = request.header(HttpHeaders.Referrer)?.let { URI.create(it).host }
+
+fun ApplicationCall.securityCode(date: Long, user: User, hashFunction: (String) -> String) =
+    hashFunction("$date:${user.userId}:${request.host()}:${referrerHost()}")
+
+fun ApplicationCall.verifyCode(date: Long, user: User, code: String, hashFunction: (String) -> String) =
+    securityCode(date, user, hashFunction) == code && (System.currentTimeMillis() - date).let {
+        it > 0 && it < TimeUnit.MILLISECONDS.convert(2, TimeUnit.HOURS)
+    }
+
 

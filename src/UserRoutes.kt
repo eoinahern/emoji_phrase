@@ -1,10 +1,13 @@
 package com.example
 
+import com.example.model.*
+import com.example.repository.*
 import io.ktor.application.*
 import io.ktor.freemarker.*
 import io.ktor.locations.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.sessions.*
 
 
 const val HOME = "/"
@@ -13,8 +16,9 @@ const val ABOUT = "/about"
 @Location(HOME)
 class Home
 
-fun Route.home() = get<Home> {
-    call.respond(FreeMarkerContent("/common/home.ftl", null))
+fun Route.home(repo: Repository) = get<Home> {
+    val user = call.sessions.get<EPSession>()?.let { repo.user(it.userId) }
+    call.respond(FreeMarkerContent("/common/home.ftl", mapOf("user" to user)))
 }
 
 
@@ -24,4 +28,7 @@ fun Route.hello() = get("/hello") { call.respondText("i say hello") }
 class About
 
 
-fun Route.about() = get<About> { call.respond(FreeMarkerContent("about.ftl", null)) }
+fun Route.about(repo: Repository) = get<About> {
+    val user = call.sessions.get<EPSession>()?.let { repo.user(it.userId) }
+    call.respond(FreeMarkerContent("about.ftl", mapOf("user" to user)))
+}

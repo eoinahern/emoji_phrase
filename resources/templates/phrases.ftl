@@ -11,6 +11,15 @@
                 <tr>
                     <td><h3>${phrase.emoji}</h3></td>
                     <td><h3>${phrase.phrase}</h3></td>
+                    <td class="col-md-1" style="text-align:center;vertical-align:middle;">
+                        <form method="post" action="/phrases">
+                            <input type="hidden" name="date" value="${date?c}">
+                            <input type="hidden" name="code" value="${code}">
+                            <input type="hidden" name="id" value="${phrase.id}">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="image" src="/static/delete.png" width="24" height="24" border="0 alt="Delete" />
+                         </form>
+                    </td>
                  </tr>
                 </#list>
             </tbody>
@@ -18,13 +27,15 @@
     </#if>
     <div class="panel-body">
     <form method="post" method="/phrases">
-    <input type="hidden" name="action" value="add"/>
-    Emoji<br>
+     <input type="hidden" name="date" value="${date?c}">
+     <input type="hidden" name="code" value="${code}">
+     <input type="hidden" name="action" value="add"/>
+     Emoji<br>
      <input type="text" name="emoji"/><br>
      Phrase: <br>
-      <input type="text" name="phrase"/>
-      <input type="submit" value="Submit"/>
-      </form>
+     <input type="text" name="phrase"/>
+     <input type="submit" value="Submit"/>
+     </form>
     </div>
 
 </@b.page>
