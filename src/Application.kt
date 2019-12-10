@@ -8,6 +8,7 @@ import com.ryanharter.ktor.moshi.*
 import freemarker.cache.*
 import io.ktor.application.*
 import io.ktor.auth.*
+import io.ktor.auth.jwt.*
 import io.ktor.features.*
 import io.ktor.freemarker.*
 import io.ktor.http.*
@@ -47,12 +48,27 @@ fun Application.module(testing: Boolean = false) {
     }
 
     install(FreeMarker) {
-        templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates") as TemplateLoader?
+        templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")
     }
 
     DatabaseFactory.init()
 
     val db = EmojiPhrasesRepository()
+    val jwtService = JWTService()
+
+    install(Authentication) {
+        jwt("jwt") {
+            verifier(jwtService.jwtVerifier)
+            realm = "emojiphrases app"
+            validate {
+                //val payload = it.payload
+                val claim = it.payload.getClaim("id")
+                val claimStr = claim.asString()
+                val user = db.userById(claimStr)
+                user
+            }
+        }
+    }
 
     val hashFunction: (String) -> String = { s -> hash(s) }
 
@@ -62,6 +78,7 @@ fun Application.module(testing: Boolean = false) {
         }
         home(db)
         about(db)
+        login(db, jwtService)
         phrase(db)
         phrases(db, hashFunction)
         signin(db, hashFunction)
