@@ -4,18 +4,19 @@ import com.example.api.*
 import com.example.model.*
 import com.example.repository.*
 import com.example.webapp.*
-import com.ryanharter.ktor.moshi.*
+import com.google.gson.*
 import freemarker.cache.*
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.features.*
 import io.ktor.freemarker.*
+import io.ktor.gson.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.locations.*
-import io.ktor.response.*
 import io.ktor.request.*
+import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.sessions.*
 import java.net.*
@@ -36,7 +37,7 @@ fun Application.module(testing: Boolean = false) {
     }
 
     this.install(ContentNegotiation) {
-        moshi()
+        gson()
     }
 
     this.install(Locations)
@@ -79,7 +80,7 @@ fun Application.module(testing: Boolean = false) {
         home(db)
         about(db)
         login(db, jwtService)
-        phrase(db)
+        phrasesApi(db)
         phrases(db, hashFunction)
         signin(db, hashFunction)
         signup(db, hashFunction)
@@ -102,5 +103,10 @@ fun ApplicationCall.verifyCode(date: Long, user: User, code: String, hashFunctio
     securityCode(date, user, hashFunction) == code && (System.currentTimeMillis() - date).let {
         it > 0 && it < TimeUnit.MILLISECONDS.convert(2, TimeUnit.HOURS)
     }
+
+const val API_VERSION = "/api/v1"
+
+
+val ApplicationCall.apiUser get() = authentication.principal<User>()
 
 
