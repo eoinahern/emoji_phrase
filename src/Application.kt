@@ -62,7 +62,6 @@ fun Application.module(testing: Boolean = false) {
             verifier(jwtService.jwtVerifier)
             realm = "emojiphrases app"
             validate {
-                //val payload = it.payload
                 val claim = it.payload.getClaim("id")
                 val claimStr = claim.asString()
                 val user = db.userById(claimStr)
