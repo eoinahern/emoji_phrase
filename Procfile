@@ -1,1 +1,1 @@
-web: ./build/libs/example-0.0.1
+web: ./build/libs/emoji_phrases/bin/emoji_phrases
